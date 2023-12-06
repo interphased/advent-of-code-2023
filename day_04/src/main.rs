@@ -51,7 +51,7 @@ fn part1(input: &str) -> i32 {
 
 #[derive(Debug)]
 struct Card {
-    matches: i32,
+    count: i32,
 }
 
 fn part2(input: &str) -> i32 {
@@ -82,26 +82,26 @@ fn part2(input: &str) -> i32 {
             .filter(|num| winning_nums.contains(num))
             .count();
 
-        if let Some(old_card) = cards.insert(id, Card { matches: 1 }) {
+        if let Some(old_card) = cards.insert(id, Card { count: 1 }) {
             let card_entry = cards.get_mut(&id);
-            card_entry.unwrap().matches += old_card.matches;
+            card_entry.unwrap().count += old_card.count;
         };
 
         let current_card = cards.get(&id).unwrap();
 
         if matches > 0 {
-            for _ in 0..current_card.matches {
+            for _ in 0..current_card.count {
                 for i in (id + 1)..=(matches as i32) + id {
-                    if let Some(old_card) = cards.insert(i, Card { matches: 1 }) {
+                    if let Some(old_card) = cards.insert(i, Card { count: 1 }) {
                         let card_entry = cards.get_mut(&i).unwrap();
-                        card_entry.matches += old_card.matches;
+                        card_entry.count += old_card.count;
                     }
                 }
             }
         }
     }
 
-    cards.iter().fold(0, |acc, c| acc + c.1.matches)
+    cards.iter().fold(0, |acc, c| acc + c.1.count)
 }
 
 // Below: Attempting to do a queue system. Works, but would take all night to process.
