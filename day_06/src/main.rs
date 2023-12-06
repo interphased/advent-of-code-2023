@@ -38,6 +38,30 @@ fn part1(input: &str) -> i32 {
     total
 }
 
-fn part2(input: &str) -> i32 {
-    0
+fn part2(input: &str) -> usize {
+    let nums: Vec<Vec<String>> = input
+        .lines()
+        .map(|l| {
+            l.split_ascii_whitespace()
+                .skip(1)
+                .map(|n| String::from(n))
+                .collect::<Vec<String>>()
+        })
+        .collect();
+
+    let time = String::from_iter(nums.first().unwrap().clone())
+        .parse::<i64>()
+        .unwrap();
+    let record = String::from_iter(nums.last().unwrap().clone())
+        .parse::<i64>()
+        .unwrap();
+
+    let total = (0..time)
+        .filter_map(|hold| {
+            let distance = hold * (time - hold);
+            (distance > record).then_some(distance)
+        })
+        .count();
+
+    total
 }
