@@ -1,5 +1,4 @@
 use array2d::Array2D;
-use num::abs_sub;
 
 mod tests;
 
@@ -125,6 +124,82 @@ fn part1(input: &str) -> i32 {
     count
 }
 
-fn part2(input: &str) -> i32 {
-    0
+const MULTIPLIER: usize = 999999;
+
+fn part2(input: &str) -> i64 {
+    let mut map: Vec<Vec<Tile>> = vec![];
+
+    input.lines().enumerate().for_each(|(y, line)| {
+        map.push(vec![]);
+        line.chars().for_each(|c| {
+            let tile = match c {
+                '.' => Tile::Space,
+                '#' => Tile::Galaxy,
+                _ => panic!("Unknown tile."),
+            };
+            map[y].push(tile);
+        })
+    });
+
+    let map = Array2D::from_rows(&map).unwrap();
+    let mut empty_rows: Vec<usize> = vec![];
+    let mut empty_cols: Vec<usize> = vec![];
+
+    // Find empty rows
+    for (y, mut row) in map.rows_iter().enumerate() {
+        if !row.find(|&&r| r == Tile::Galaxy).is_some() {
+            empty_rows.push(y)
+        }
+    }
+
+    // Find empty cols
+    for (x, mut col) in map.columns_iter().enumerate() {
+        if !col.find(|&&r| r == Tile::Galaxy).is_some() {
+            empty_cols.push(x);
+        }
+    }
+
+    // collect all galaxies, apply multiplier to (x, y)
+    let mut galaxies: Vec<(usize, usize)> = map
+        .enumerate_row_major()
+        .filter_map(|((x, y), tile)| {
+            let mut cy = 0;
+            for fy in empty_cols.iter() {
+                if y > *fy {
+                    cy += MULTIPLIER;
+                }
+            }
+            let mut cx = 0;
+            for fx in empty_rows.iter() {
+                if x > *fx {
+                    cx += MULTIPLIER;
+                }
+            }
+            match tile {
+                Tile::Galaxy => Some((x + cx, y + cy)),
+                _ => None,
+            }
+        })
+        .collect();
+
+    dbg!(&galaxies);
+
+    // add up differences between galaxies (x, y)
+    let mut count = 0;
+    while galaxies.iter().count() > 1 {
+        for i in 0..galaxies.iter().count() {
+            let mut dx = galaxies[0].0 as i64 - galaxies[i].0 as i64;
+            let mut dy = galaxies[0].1 as i64 - galaxies[i].1 as i64;
+            if dx.is_negative() {
+                dx = dx * -1;
+            }
+            if dy.is_negative() {
+                dy = dy * -1;
+            }
+            count += dx + dy;
+        }
+        galaxies.remove(0);
+    }
+
+    count
 }
