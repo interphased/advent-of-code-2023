@@ -18,4 +18,21 @@ O.#..O.#.#
         );
         assert_eq!(result, 136);
     }
+
+    #[test]
+    fn test_2() {
+        let result = part2(
+            "O....#....
+O.OO#....#
+.....##...
+OO.#O....O
+.O.....O#.
+O.#..O.#.#
+..O..#O..O
+.......O..
+#....###..
+#OO..#....",
+        );
+        assert_eq!(result, 64);
+    }
 }

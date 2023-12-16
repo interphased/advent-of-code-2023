@@ -1,5 +1,3 @@
-use std::{io::Empty, vec};
-
 mod tests;
 
 fn main() {
@@ -51,6 +49,20 @@ fn slide_north(tiles: &mut Vec<Vec<Tile>>) {
     }
 }
 
+fn rotate_clockwise(tiles: &Vec<Vec<Tile>>) -> Vec<Vec<Tile>> {
+    let height = tiles.len();
+    let width = tiles[0].len();
+    let mut rotated = vec![vec![Tile::Empty; width]; height];
+
+    for row in 0..height {
+        for col in 0..width {
+            rotated[col][height - 1 - row] = tiles[row][col];
+        }
+    }
+
+    rotated
+}
+
 fn calculate_load(tiles: Vec<Vec<Tile>>) -> i32 {
     let mut load = 0;
     for (i, row) in tiles.iter().enumerate() {
@@ -62,7 +74,18 @@ fn calculate_load(tiles: Vec<Vec<Tile>>) -> i32 {
             }
         }
     }
+
     load as i32
+}
+
+fn cycle(mut tiles: Vec<Vec<Tile>>) -> Vec<Vec<Tile>> {
+    for _ in 0..4 {
+        slide_north(&mut tiles);
+        let rotated_tiles = rotate_clockwise(&tiles);
+        tiles = rotated_tiles;
+    }
+
+    tiles
 }
 
 fn part1(input: &str) -> i32 {
@@ -71,6 +94,11 @@ fn part1(input: &str) -> i32 {
     calculate_load(tiles)
 }
 
-fn part2(input: &str) -> i64 {
-    0
+fn part2(input: &str) -> i32 {
+    let mut tiles: Vec<Vec<Tile>> = parse_input(input);
+    for i in 0..100 {
+        println!("spinning... {}", i);
+        tiles = cycle(tiles);
+    }
+    calculate_load(tiles)
 }
